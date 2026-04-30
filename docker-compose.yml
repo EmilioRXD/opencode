@@ -3,22 +3,21 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: opencode-web
     restart: unless-stopped
     ports:
-      - "4096:4096"
-      - "3100-3110:3100-3110"
+      - "${OPENCODE_PORT}:${OPENCODE_PORT}"
+      - "${OPENCODE_PORT_RANGE_START}-${OPENCODE_PORT_RANGE_END}:${OPENCODE_PORT_RANGE_START}-${OPENCODE_PORT_RANGE_END}"
     volumes:
       # Workspace directory (donde estarán tus proyectos)
-      - /opt/opencode/wileidy/workspace:/workspace
+      - ${WORKSPACE_PATH}/workspace:/workspace
       # Archivos de configuración y estado persistente
-      - /opt/opencode/wileidy/data/config:/root/.config/opencode
-      - /opt/opencode/wileidy/data/share:/root/.local/share/opencode
+      - ${WORKSPACE_PATH}/data/config:/root/.config/opencode
+      - ${WORKSPACE_PATH}/data/share:/root/.local/share/opencode
     environment:
       - OPENCODE_SERVER_PASSWORD=${OPENCODE_PASSWORD}
       - OPENCODE_SERVER_USERNAME=${OPENCODE_USER}
       - OPENCODE_HOSTNAME=0.0.0.0
-      - OPENCODE_PORT=4096
+      - OPENCODE_PORT=${OPENCODE_PORT}
       # Opcional: configuraciones de LLM (puedes ponerlas aquí o configurarlas en la UI)
       # - OPENAI_API_KEY=${OPENAI_API_KEY}
     working_dir: /workspace
