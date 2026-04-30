@@ -1,8 +1,6 @@
 services:
   opencode-web:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: smanx/opencode:latest
     container_name: opencode-web
     restart: unless-stopped
     ports:
@@ -15,10 +13,8 @@ services:
       - /opt/opencode/wileidy/data/config:/root/.config/opencode
       - /opt/opencode/wileidy/data/share:/root/.local/share/opencode
     environment:
-      - OPENCODE_SERVER_PASSWORD=${OPENCODE_PASSWORD}
       - OPENCODE_SERVER_USERNAME=${OPENCODE_USER}
+      - OPENCODE_SERVER_PASSWORD=${OPENCODE_PASSWORD}
       - OPENCODE_HOSTNAME=0.0.0.0
       - OPENCODE_PORT=4096
-      # Opcional: configuraciones de LLM (puedes ponerlas aquí o configurarlas en la UI)
-      # - OPENAI_API_KEY=${OPENAI_API_KEY}
     working_dir: /workspace
