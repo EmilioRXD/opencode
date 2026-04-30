@@ -1,30 +1,33 @@
-FROM ghcr.io/anomalyco/opencode:latest
+FROM ghcr.io/anomalyco/opencode:latest-debian
 
 USER root
 
-# Instalar dependencias base (Alpine usa apk, no apt-get)
-RUN apk update && apk add --no-cache \
+# Instalar dependencias base (Debian/Ubuntu con apt-get)
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
     wget \
     unzip \
     ca-certificates \
     gnupg \
-    bash \
-    build-base \
+    build-essential \
     python3 \
-    py3-pip \
+    python3-pip \
+    python3-venv \
     openssh-client \
     jq \
-    ripgrep
+    ripgrep \
+    && rm -rf /var/lib/apt/lists/*
 
-# Instalar Node.js LTS + npm (Alpine compatible)
-RUN apk add --no-cache nodejs npm
+# Instalar Node.js LTS via NodeSource
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
 
 # Instalar pnpm y yarn globalmente
 RUN npm install -g pnpm yarn
 
-# Instalar Bun (requiere bash, ya instalado arriba)
+# Instalar Bun
 RUN curl -fsSL https://bun.sh/install | bash
 ENV PATH="/root/.bun/bin:${PATH}"
 
