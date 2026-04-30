@@ -1,30 +1,33 @@
-FROM ghcr.io/anomalyco/opencode:latest
+FROM smanx/opencode:latest
 
 USER root
 
-# Alpine usa apk (no apt-get)
-RUN apk update && apk add --no-cache \
+# Instalar herramientas de desarrollo adicionales (Ubuntu/Debian con apt-get)
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
     wget \
     unzip \
     ca-certificates \
     gnupg \
-    bash \
-    build-base \
+    build-essential \
     python3 \
-    py3-pip \
+    python3-pip \
+    python3-venv \
     openssh-client \
     jq \
-    ripgrep
+    ripgrep \
+    && rm -rf /var/lib/apt/lists/*
 
-# Node.js LTS + npm
-RUN apk add --no-cache nodejs npm
+# Node.js LTS via NodeSource
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
 
 # pnpm y yarn
 RUN npm install -g pnpm yarn
 
-# Bun (requiere bash, ya instalado arriba)
+# Bun
 RUN curl -fsSL https://bun.sh/install | bash
 ENV PATH="/root/.bun/bin:${PATH}"
 

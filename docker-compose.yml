@@ -12,12 +12,13 @@ services:
       # Workspace directory (donde estarán tus proyectos)
       - /opt/opencode/wileidy/workspace:/workspace
       # Archivos de configuración y estado persistente
-      - /opt/opencode/wileidy/data/config:/home/opencode/.config/opencode
-      - /opt/opencode/wileidy/data/share:/home/opencode/.local/share/opencode
+      - /opt/opencode/wileidy/data/config:/root/.config/opencode
+      - /opt/opencode/wileidy/data/share:/root/.local/share/opencode
     environment:
       - OPENCODE_SERVER_PASSWORD=${OPENCODE_PASSWORD}
       - OPENCODE_SERVER_USERNAME=${OPENCODE_USER}
+      - OPENCODE_HOSTNAME=0.0.0.0
+      - OPENCODE_PORT=4096
       # Opcional: configuraciones de LLM (puedes ponerlas aquí o configurarlas en la UI)
       # - OPENAI_API_KEY=${OPENAI_API_KEY}
     working_dir: /workspace
-    command: ["web", "--hostname", "0.0.0.0", "--port", "4096"]
