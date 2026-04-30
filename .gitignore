@@ -1,0 +1,7 @@
+# Variables de entorno (contienen credenciales)
+.env
+.env.*
+!.env.example
+
+# Docker
+*.log
