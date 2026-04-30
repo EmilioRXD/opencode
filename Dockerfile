@@ -1,8 +1,10 @@
-FROM ghcr.io/anomalyco/opencode:latest-debian
+FROM debian:bookworm-slim
 
-USER root
+# ── Variables de versión ──────────────────────────────────────────────────────
+ARG OPENCODE_VERSION=v0.0.55
+ARG TARGETARCH=amd64
 
-# Instalar dependencias base (Debian/Ubuntu con apt-get)
+# ── Dependencias base ─────────────────────────────────────────────────────────
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
@@ -19,18 +21,31 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ripgrep \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar Node.js LTS via NodeSource
+# ── Instalar opencode desde el .deb oficial ───────────────────────────────────
+RUN curl -fsSL \
+    "https://github.com/opencode-ai/opencode/releases/download/${OPENCODE_VERSION}/opencode-linux-${TARGETARCH}.deb" \
+    -o /tmp/opencode.deb \
+    && dpkg -i /tmp/opencode.deb \
+    && rm /tmp/opencode.deb
+
+# ── Node.js LTS via NodeSource ────────────────────────────────────────────────
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar pnpm y yarn globalmente
+# ── pnpm y yarn ───────────────────────────────────────────────────────────────
 RUN npm install -g pnpm yarn
 
-# Instalar Bun
+# ── Bun ──────────────────────────────────────────────────────────────────────
 RUN curl -fsSL https://bun.sh/install | bash
 ENV PATH="/root/.bun/bin:${PATH}"
 
-# Configurar git con valores por defecto seguros
+# ── Configuración de git ──────────────────────────────────────────────────────
 RUN git config --system core.autocrlf input && \
     git config --system init.defaultBranch main
+
+WORKDIR /workspace
+EXPOSE 4096
+
+ENTRYPOINT ["opencode"]
+CMD ["web", "--hostname", "0.0.0.0", "--port", "4096"]
